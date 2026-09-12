@@ -35,11 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={`${poppins.variable} ${nunito.variable} ${spaceMono.variable}`}>
+    <html lang="pt-BR" className={`dark ${poppins.variable} ${nunito.variable} ${spaceMono.variable}`}>
       <head>
         <ThemeScript />
       </head>
-      <body className="bg-bg dark:bg-surface-dark-muted text-text-primary dark:text-text-dark-primary font-body transition-colors duration-300">
+      <body className="bg-surface-dark-muted text-text-dark-primary font-body">
         {children}
       </body>
     </html>

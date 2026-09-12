@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import ThemeToggle from './ThemeToggle';
 
 export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -37,7 +36,6 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
                 </Link>
               </>
             )}
-            <ThemeToggle />
             <Link href="/login" className="px-6 py-2 bg-primary dark:bg-primary-dark text-white rounded-full font-body font-bold text-sm hover:bg-primary-hover dark:hover:bg-primary transition-colors">
               Login
             </Link>
