@@ -50,7 +50,7 @@ export default function FilmesCarousel({
 
   return (
     <div className="mb-12">
-      <h2 className="text-2xl font-bold text-white mb-4">{titulo}</h2>
+      <h2 className="text-2xl font-display font-bold text-white mb-4">{titulo}</h2>
 
       <div className="relative group">
         {/* Botão Esquerda */}

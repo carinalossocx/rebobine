@@ -29,7 +29,7 @@ export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeC
       onClick={() => onClique?.(filme)}
     >
       {/* Poster */}
-      <div className="relative overflow-hidden rounded-lg bg-slate-800 aspect-[2/3] shadow-lg">
+      <div className="relative overflow-hidden rounded-lg bg-surface aspect-[2/3] shadow-medium group-hover:shadow-product-hover transition-shadow duration-200">
         <Image
           src={posterUrl}
           alt={filme.titulo}

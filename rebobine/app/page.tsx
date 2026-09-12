@@ -17,11 +17,11 @@ export default function Home() {
   }, [router]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+    <main className="min-h-screen flex items-center justify-center bg-bg">
       <div className="text-center">
         <div className="animate-spin text-6xl mb-4">🎬</div>
-        <h1 className="text-5xl font-bold text-white mb-4">Rebobine</h1>
-        <p className="text-xl text-slate-300">Carregando...</p>
+        <h1 className="text-5xl font-display font-bold text-white mb-4">Rebobine</h1>
+        <p className="text-xl font-body text-white/60">Carregando...</p>
       </div>
     </main>
   );

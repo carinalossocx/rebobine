@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Filme } from '@/lib/types';
 import {
@@ -43,6 +43,8 @@ export default function CatalogPage() {
   const [soDisponivel, setSoDisponivel] = useState(false);
   const [reservando, setReservando] = useState(false);
   const [feedback, setFeedback] = useState<{ tipo: 'sucesso' | 'erro' | 'info'; texto: string } | null>(null);
+  const [filtroAberto, setFiltroAberto] = useState(false);
+  const filtroRef = useRef<HTMLDivElement>(null);
 
   const fecharModal = () => {
     setModalFilme(null);
@@ -94,16 +96,12 @@ export default function CatalogPage() {
   useEffect(() => {
     const carregar = async () => {
       try {
-        console.log('Iniciando carregamento do catálogo...');
         const dados = await carregarCatalogo();
-        console.log('Dados recebidos:', dados.length);
         setFilmes(dados);
         const ativos = obterFilmesAtivos(dados);
-        console.log('Filmes ativos:', ativos.length);
         setFilmesAtivos(ativos);
         setFiltrados(ativos);
         setGeneros(['Todos', ...obterGenerosCatalogo(ativos)]);
-        console.log('Catálogo carregado com sucesso');
       } catch (erro) {
         console.error('Erro ao carregar catálogo:', erro);
       } finally {
@@ -121,12 +119,23 @@ export default function CatalogPage() {
     setFiltrados(resultado);
   }, [busca, generoSelecionado, filmesAtivos]);
 
+  // Fechar painel de filtro ao clicar fora
+  useEffect(() => {
+    const aoClicarFora = (e: MouseEvent) => {
+      if (filtroRef.current && !filtroRef.current.contains(e.target as Node)) {
+        setFiltroAberto(false);
+      }
+    };
+    document.addEventListener('mousedown', aoClicarFora);
+    return () => document.removeEventListener('mousedown', aoClicarFora);
+  }, []);
+
   if (carregando) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin text-4xl mb-4">🎬</div>
-          <p className="text-slate-300">Carregando catálogo...</p>
+          <p className="text-white/60 font-body">Carregando catálogo...</p>
         </div>
       </div>
     );
@@ -139,69 +148,102 @@ export default function CatalogPage() {
     filmes: filtrarPorGenero(filmesAtivos, genero).slice(0, 12),
   }));
 
+  const filtroAtivo = generoSelecionado !== 'Todos' || soDisponivel;
+
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-bg">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <section className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-2">
             Catálogo Rebobine
           </h1>
-          <p className="text-slate-300 mb-8">
-            {filmesAtivos.length} filmes disponíveis
+          <p className="text-white/60 font-body mb-6">
+            {filtrados.length} de {filmesAtivos.length} filmes
           </p>
 
-          {/* Busca */}
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Buscar por título..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              className="w-full px-6 py-3 bg-slate-800 text-white rounded-lg border border-slate-700 focus:border-red-500 focus:outline-none transition"
-            />
-            <span className="absolute right-4 top-3 text-slate-400">🔍</span>
-          </div>
-
-          {/* Filtros */}
-          <div className="space-y-4">
-            {/* Gênero */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">
-                Gênero
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {generos.map((genero) => (
-                  <button
-                    key={genero}
-                    onClick={() => setGeneroSelecionado(genero)}
-                    className={`px-4 py-2 rounded-lg font-medium transition ${
-                      generoSelecionado === genero
-                        ? 'bg-red-600 text-white'
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    {genero}
-                  </button>
-                ))}
+          {/* Busca + Filtro (suspenso, só abre ao clicar) */}
+          <div className="relative" ref={filtroRef}>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Buscar por título..."
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  onFocus={() => setFiltroAberto(true)}
+                  className="w-full h-11 pl-4 pr-11 bg-surface text-white rounded-md border border-white/10 focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 transition font-body placeholder:text-white/40"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+                  🔍
+                </span>
               </div>
+
+              <button
+                onClick={() => setFiltroAberto((v) => !v)}
+                aria-expanded={filtroAberto}
+                className={`h-11 px-4 rounded-md border font-body font-semibold text-sm transition whitespace-nowrap flex items-center gap-2 ${
+                  filtroAtivo
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-surface border-white/10 text-white/70 hover:border-white/30'
+                }`}
+              >
+                Filtros
+                {filtroAtivo && (
+                  <span className="w-2 h-2 rounded-full bg-white" />
+                )}
+              </button>
             </div>
 
-            {/* Apenas Disponíveis */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="soDisponivel"
-                checked={soDisponivel}
-                onChange={(e) => setSoDisponivel(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <label htmlFor="soDisponivel" className="text-slate-300">
-                ☑ Apenas disponíveis
-              </label>
-            </div>
+            {/* Painel suspenso — só aparece quando aberto */}
+            {filtroAberto && (
+              <div className="absolute left-0 right-0 mt-2 z-30 bg-surface border border-white/10 rounded-lg shadow-overlay p-4 max-h-[70vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-semibold text-white/70 font-body">
+                    Gênero
+                  </label>
+                  {generoSelecionado !== 'Todos' && (
+                    <button
+                      onClick={() => setGeneroSelecionado('Todos')}
+                      className="text-xs text-primary hover:text-primary-light font-body"
+                    >
+                      Limpar
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {generos.map((genero) => (
+                    <button
+                      key={genero}
+                      onClick={() => {
+                        setGeneroSelecionado(genero);
+                        setFiltroAberto(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-body font-medium transition border ${
+                        generoSelecionado === genero
+                          ? 'bg-primary border-primary text-white'
+                          : 'bg-transparent border-white/15 text-white/70 hover:bg-white/5'
+                      }`}
+                    >
+                      {genero}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="flex items-center gap-2 text-white/70 font-body text-sm border-t border-white/10 pt-3">
+                  <input
+                    type="checkbox"
+                    checked={soDisponivel}
+                    onChange={(e) => setSoDisponivel(e.target.checked)}
+                    className="w-4 h-4 accent-[#D946EF]"
+                  />
+                  Apenas disponíveis
+                </label>
+              </div>
+            )}
           </div>
         </section>
 
@@ -218,7 +260,7 @@ export default function CatalogPage() {
         {/* Grid de Resultados da Busca */}
         {(busca || generoSelecionado !== 'Todos') && (
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6">
+            <h2 className="text-2xl font-display font-bold text-white mb-6">
               Resultados ({filtrados.length})
             </h2>
             {filtrados.length > 0 ? (
@@ -235,7 +277,7 @@ export default function CatalogPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-slate-400">Nenhum filme encontrado.</p>
+                <p className="text-white/50 font-body">Nenhum filme encontrado.</p>
               </div>
             )}
           </section>
@@ -249,13 +291,13 @@ export default function CatalogPage() {
           onClick={fecharModal}
         >
           <div
-            className="bg-slate-800 rounded-lg max-w-2xl w-full max-h-[32rem] overflow-y-auto"
+            className="bg-surface rounded-lg max-w-2xl w-full max-h-[32rem] overflow-y-auto shadow-overlay"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
               <div className="flex gap-6">
                 {/* Poster */}
-                <div className="flex-shrink-0 w-32 h-48 bg-slate-700 rounded overflow-hidden flex items-center justify-center">
+                <div className="flex-shrink-0 w-32 h-48 bg-surface-raised rounded-md overflow-hidden flex items-center justify-center">
                   {getPosterUrl(modalFilme.poster_path) ? (
                     <img
                       src={getPosterUrl(modalFilme.poster_path)!}
@@ -263,7 +305,7 @@ export default function CatalogPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-slate-500 text-xs text-center px-2">Sem imagem</span>
+                    <span className="text-white/40 text-xs text-center px-2 font-body">Sem imagem</span>
                   )}
                 </div>
 
@@ -271,38 +313,38 @@ export default function CatalogPage() {
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h2 className="text-2xl font-bold text-white">
+                      <h2 className="text-2xl font-display font-bold text-white">
                         {modalFilme.titulo}
                       </h2>
                       {modalFilme.titulo_original && (
-                        <p className="text-slate-400">{modalFilme.titulo_original}</p>
+                        <p className="text-white/50 font-body">{modalFilme.titulo_original}</p>
                       )}
                     </div>
                     <button
                       onClick={fecharModal}
-                      className="text-2xl text-slate-400 hover:text-white"
+                      className="text-2xl text-white/40 hover:text-white transition-colors"
                     >
                       ✕
                     </button>
                   </div>
 
                   {/* Meta */}
-                  <div className="space-y-2 mb-4 text-sm">
+                  <div className="space-y-2 mb-4 text-sm font-body">
                     {modalFilme.data_lancamento && (
-                      <p className="text-slate-300">
-                        <span className="font-semibold">Lançamento:</span>{' '}
+                      <p className="text-white/70">
+                        <span className="font-semibold text-white">Lançamento:</span>{' '}
                         {new Date(modalFilme.data_lancamento).toLocaleDateString('pt-BR')}
                       </p>
                     )}
                     {modalFilme.nota_tmdb && (
-                      <p className="text-slate-300">
-                        <span className="font-semibold">Nota TMDB:</span> ⭐{' '}
-                        {modalFilme.nota_tmdb.toFixed(1)}/10
+                      <p className="text-white/70">
+                        <span className="font-semibold text-white">Nota TMDB:</span>{' '}
+                        <span className="text-tertiary">⭐ {modalFilme.nota_tmdb.toFixed(1)}/10</span>
                       </p>
                     )}
                     {modalFilme.generos.length > 0 && (
-                      <p className="text-slate-300">
-                        <span className="font-semibold">Gêneros:</span>{' '}
+                      <p className="text-white/70">
+                        <span className="font-semibold text-white">Gêneros:</span>{' '}
                         {modalFilme.generos.join(', ')}
                       </p>
                     )}
@@ -311,7 +353,7 @@ export default function CatalogPage() {
                   {/* Sinopse */}
                   {modalFilme.sinopse && (
                     <div className="mb-4">
-                      <p className="text-slate-300 text-sm leading-relaxed">
+                      <p className="text-white/70 text-sm leading-relaxed font-body">
                         {modalFilme.sinopse}
                       </p>
                     </div>
@@ -320,12 +362,12 @@ export default function CatalogPage() {
                   {/* Feedback */}
                   {feedback && (
                     <div
-                      className={`mb-4 px-4 py-2 rounded text-sm ${
+                      className={`mb-4 px-4 py-2 rounded-md text-sm font-body ${
                         feedback.tipo === 'sucesso'
                           ? 'bg-green-600/20 border border-green-600 text-green-300'
                           : feedback.tipo === 'erro'
                           ? 'bg-red-600/20 border border-red-600 text-red-300'
-                          : 'bg-blue-600/20 border border-blue-600 text-blue-300'
+                          : 'bg-secondary/20 border border-secondary text-secondary'
                       }`}
                     >
                       {feedback.texto}
@@ -336,14 +378,14 @@ export default function CatalogPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={handleAlugar}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition"
+                      className="px-6 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary-active text-white rounded-full font-body font-bold text-sm transition-colors"
                     >
                       🎬 Alugar
                     </button>
                     <button
                       onClick={handleReservar}
                       disabled={reservando}
-                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-600 disabled:opacity-60 text-white rounded font-semibold transition"
+                      className="px-6 py-2.5 bg-transparent border-2 border-primary hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed text-primary rounded-full font-body font-bold text-sm transition-colors"
                     >
                       {reservando ? 'Reservando...' : '⭐ Reservar'}
                     </button>
@@ -356,8 +398,8 @@ export default function CatalogPage() {
       )}
 
       {/* Créditos TMDB */}
-      <footer className="border-t border-slate-800 mt-16 py-8 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+      <footer className="border-t border-white/10 mt-16 py-8 bg-surface">
+        <div className="max-w-7xl mx-auto px-4 text-center text-white/40 text-sm font-body">
           <p>Dados cinematográficos: TMDB. Este produto usa a API TMDB sem endosso.</p>
         </div>
       </footer>
