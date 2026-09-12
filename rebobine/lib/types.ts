@@ -3,7 +3,7 @@
 export interface Filme {
   id: string;
   chave_externa: string;
-  id_tmdb: number;
+  id_tmdb: string;
   titulo: string;
   titulo_original: string | null;
   sinopse: string | null;
@@ -17,6 +17,8 @@ export interface Filme {
   ativo: boolean;
   dados_origem: Record<string, any>;
   importado_em: string;
+  criado_em?: string;
+  atualizado_em?: string;
 }
 
 export interface Exemplar {

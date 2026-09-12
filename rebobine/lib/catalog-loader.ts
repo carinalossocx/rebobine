@@ -1,8 +1,7 @@
 import { Filme } from './types';
 
 /**
- * Carrega catálogo do arquivo JSON.
- * Futuramente virá do Supabase.
+ * Carrega catálogo do Supabase. Fallback para JSON local se Supabase falhar.
  */
 
 let cachedCatalog: Filme[] | null = null;
@@ -11,16 +10,25 @@ export async function carregarCatalogo(): Promise<Filme[]> {
   if (cachedCatalog) return cachedCatalog;
 
   try {
-    // No cliente, usar fetch; no servidor, usar readFile
+    const res = await fetch('/api/catalogo');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    cachedCatalog = data.filmes || [];
+    return cachedCatalog!;
+  } catch (erro) {
+    console.error('Erro ao carregar catálogo do Supabase, usando fallback JSON:', erro);
+    return carregarCatalogoFallback();
+  }
+}
+
+async function carregarCatalogoFallback(): Promise<Filme[]> {
+  try {
     if (typeof window !== 'undefined') {
       const res = await fetch('/dados/filmes_locadora_dataset.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log('JSON loaded, filmes count:', data.filmes?.length);
       cachedCatalog = transformarDadosTMDB(data.filmes || []);
-      console.log('Transformed filmes count:', cachedCatalog.length);
     } else {
-      // Servidor: ler do filesystem
       const fs = await import('fs/promises');
       const path = await import('path');
       const caminhoJSON = path.join(process.cwd(), 'public', 'dados', 'filmes_locadora_dataset.json');
@@ -28,9 +36,9 @@ export async function carregarCatalogo(): Promise<Filme[]> {
       const data = JSON.parse(conteudo);
       cachedCatalog = transformarDadosTMDB(data.filmes || []);
     }
-    return cachedCatalog;
+    return cachedCatalog!;
   } catch (erro) {
-    console.error('Erro ao carregar catálogo:', erro);
+    console.error('Erro ao carregar catálogo (fallback):', erro);
     return [];
   }
 }

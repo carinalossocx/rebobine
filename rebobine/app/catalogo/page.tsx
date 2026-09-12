@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Filme } from '@/lib/types';
 import {
   carregarCatalogo,
@@ -13,7 +14,24 @@ import Header from '@/components/Header';
 import FilmeCard from '@/components/FilmeCard';
 import FilmesCarousel from '@/components/FilmesCarousel';
 
+const MENSAGENS_ERRO: Record<string, string> = {
+  CLIENTE_NAO_ENCONTRADO: 'Cliente não encontrado. Faça login novamente.',
+  CLIENTE_INATIVO_OU_INEXISTENTE: 'Sua conta está inativa. Fale com o suporte.',
+  SEM_EXEMPLAR_DISPONIVEL: 'Não há exemplares disponíveis para este filme agora.',
+  EXEMPLAR_INDISPONIVEL: 'Este exemplar acabou de ser reservado por outro cliente.',
+  LIMITE_RESERVAS_ATINGIDO: 'Você já tem 2 reservas ativas. Cancele uma para reservar outra.',
+  DADOS_INCOMPLETOS: 'Dados incompletos para reservar.',
+  ERRO_INTERNO: 'Erro ao processar. Tente novamente.',
+};
+
+function getPosterUrl(posterPath: string | null): string | null {
+  if (!posterPath) return null;
+  if (posterPath.startsWith('http')) return posterPath;
+  return `https://image.tmdb.org/t/p/w500${posterPath}`;
+}
+
 export default function CatalogPage() {
+  const router = useRouter();
   const [filmes, setFilmes] = useState<Filme[]>([]);
   const [filmesAtivos, setFilmesAtivos] = useState<Filme[]>([]);
   const [filtrados, setFiltrados] = useState<Filme[]>([]);
@@ -23,6 +41,54 @@ export default function CatalogPage() {
   const [carregando, setCarregando] = useState(true);
   const [modalFilme, setModalFilme] = useState<Filme | null>(null);
   const [soDisponivel, setSoDisponivel] = useState(false);
+  const [reservando, setReservando] = useState(false);
+  const [feedback, setFeedback] = useState<{ tipo: 'sucesso' | 'erro' | 'info'; texto: string } | null>(null);
+
+  const fecharModal = () => {
+    setModalFilme(null);
+    setFeedback(null);
+  };
+
+  const handleReservar = async () => {
+    if (!modalFilme) return;
+    const email = typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null;
+
+    if (!email) {
+      router.push('/login');
+      return;
+    }
+
+    setReservando(true);
+    setFeedback(null);
+
+    try {
+      const res = await fetch('/api/reservar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filme_id: modalFilme.id, cliente_email: email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setFeedback({ tipo: 'erro', texto: MENSAGENS_ERRO[data.erro] || 'Erro ao reservar.' });
+        return;
+      }
+
+      const expira = new Date(data.expira_em).toLocaleString('pt-BR');
+      setFeedback({ tipo: 'sucesso', texto: `Reservado! Retire até ${expira}.` });
+    } catch {
+      setFeedback({ tipo: 'erro', texto: 'Erro de conexão. Tente novamente.' });
+    } finally {
+      setReservando(false);
+    }
+  };
+
+  const handleAlugar = () => {
+    setFeedback({
+      tipo: 'info',
+      texto: 'O aluguel é finalizado no balcão da loja. Reserve para garantir sua cópia até lá.',
+    });
+  };
 
   // Carregar catálogo ao montar
   useEffect(() => {
@@ -180,22 +246,24 @@ export default function CatalogPage() {
       {modalFilme && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-          onClick={() => setModalFilme(null)}
+          onClick={fecharModal}
         >
           <div
-            className="bg-slate-800 rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto"
+            className="bg-slate-800 rounded-lg max-w-2xl w-full max-h-[32rem] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
               <div className="flex gap-6">
                 {/* Poster */}
-                <div className="flex-shrink-0 w-32 h-48 bg-slate-700 rounded overflow-hidden">
-                  {modalFilme.poster_path && (
+                <div className="flex-shrink-0 w-32 h-48 bg-slate-700 rounded overflow-hidden flex items-center justify-center">
+                  {getPosterUrl(modalFilme.poster_path) ? (
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${modalFilme.poster_path}`}
+                      src={getPosterUrl(modalFilme.poster_path)!}
                       alt={modalFilme.titulo}
                       className="w-full h-full object-cover"
                     />
+                  ) : (
+                    <span className="text-slate-500 text-xs text-center px-2">Sem imagem</span>
                   )}
                 </div>
 
@@ -211,7 +279,7 @@ export default function CatalogPage() {
                       )}
                     </div>
                     <button
-                      onClick={() => setModalFilme(null)}
+                      onClick={fecharModal}
                       className="text-2xl text-slate-400 hover:text-white"
                     >
                       ✕
@@ -249,13 +317,35 @@ export default function CatalogPage() {
                     </div>
                   )}
 
+                  {/* Feedback */}
+                  {feedback && (
+                    <div
+                      className={`mb-4 px-4 py-2 rounded text-sm ${
+                        feedback.tipo === 'sucesso'
+                          ? 'bg-green-600/20 border border-green-600 text-green-300'
+                          : feedback.tipo === 'erro'
+                          ? 'bg-red-600/20 border border-red-600 text-red-300'
+                          : 'bg-blue-600/20 border border-blue-600 text-blue-300'
+                      }`}
+                    >
+                      {feedback.texto}
+                    </div>
+                  )}
+
                   {/* Ações */}
                   <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition">
+                    <button
+                      onClick={handleAlugar}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition"
+                    >
                       🎬 Alugar
                     </button>
-                    <button className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-semibold transition">
-                      ⭐ Reservar
+                    <button
+                      onClick={handleReservar}
+                      disabled={reservando}
+                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-600 disabled:opacity-60 text-white rounded font-semibold transition"
+                    >
+                      {reservando ? 'Reservando...' : '⭐ Reservar'}
                     </button>
                   </div>
                 </div>
