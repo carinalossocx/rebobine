@@ -1,7 +1,7 @@
 'use client';
 
 import { Filme } from '@/lib/types';
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import FilmeCard from './FilmeCard';
 
 interface FilmesCarouselProps {
@@ -16,35 +16,21 @@ export default function FilmesCarousel({
   onFilmeClique,
 }: FilmesCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
 
   useEffect(() => {
-    checkScroll();
-    const element = scrollRef.current;
-    element?.addEventListener('scroll', checkScroll);
-    window.addEventListener('resize', checkScroll);
-    return () => {
-      element?.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
-    };
-  }, []);
+    const el = scrollRef.current;
+    if (!el) return;
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollRef.current) return;
-    const scrollAmount = 400;
-    scrollRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
-  };
+    const handleWheel = (e: WheelEvent) => {
+      const deltaHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (deltaHorizontal === 0) return;
+      e.preventDefault();
+      el.scrollLeft += deltaHorizontal;
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   if (filmes.length === 0) return null;
 
@@ -52,23 +38,10 @@ export default function FilmesCarousel({
     <section className="py-12 mb-8">
       <h2 className="text-subhead font-display font-bold text-text-primary dark:text-text-dark-primary mb-6">{titulo}</h2>
 
-      <div className="relative group">
-        {/* Left Scroll Button */}
-        {canScrollLeft && (
-          <button
-            onClick={() => scroll('left')}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white dark:bg-surface-dark shadow-medium hover:shadow-large text-primary dark:text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
-            aria-label="Scroll left"
-          >
-            <span className="text-xl font-bold">‹</span>
-          </button>
-        )}
-
-        {/* Carousel Container */}
+      <div className="relative">
         <div
           ref={scrollRef}
           className="flex gap-6 overflow-x-auto scrollbar-hide pb-2"
-          style={{ scrollBehavior: 'smooth' }}
         >
           {filmes.map((filme) => (
             <div
@@ -83,17 +56,6 @@ export default function FilmesCarousel({
             </div>
           ))}
         </div>
-
-        {/* Right Scroll Button */}
-        {canScrollRight && (
-          <button
-            onClick={() => scroll('right')}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white dark:bg-surface-dark shadow-medium hover:shadow-large text-primary dark:text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
-            aria-label="Scroll right"
-          >
-            <span className="text-xl font-bold">›</span>
-          </button>
-        )}
       </div>
     </section>
   );
