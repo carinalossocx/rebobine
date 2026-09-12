@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -19,7 +20,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
           </Link>
 
           {/* Nav Desktop */}
-          <nav className="hidden md:flex gap-8 font-body text-body-md">
+          <nav className="hidden md:flex gap-6 font-body text-body-md items-center">
             <Link href="/catalogo" className="text-text-primary dark:text-text-dark-secondary hover:text-primary dark:hover:text-primary font-medium transition-colors">
               Catálogo
             </Link>
@@ -36,6 +37,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
                 </Link>
               </>
             )}
+            <ThemeToggle />
             <Link href="/login" className="px-6 py-2 bg-primary dark:bg-primary-dark text-white rounded-full font-body font-bold text-sm hover:bg-primary-hover dark:hover:bg-primary transition-colors">
               Login
             </Link>
