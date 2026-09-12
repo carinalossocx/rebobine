@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Poppins, Nunito, Space_Mono } from 'next/font/google';
 import './globals.css';
+import ThemeScript from './theme-script';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -35,6 +36,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning className={`${poppins.variable} ${nunito.variable} ${spaceMono.variable}`}>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="bg-bg dark:bg-surface-dark-muted text-text-primary dark:text-text-dark-primary font-body transition-colors duration-300">
         {children}
       </body>
