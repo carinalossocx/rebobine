@@ -141,12 +141,39 @@ export default function CatalogPage() {
     );
   }
 
-  // Seções para carousel (primeiras do gênero)
+  // Seções para carousel: primeiro os mais pontuados, depois ação, depois premiados,
+  // depois demais gêneros
+  const porNotaDesc = (a: Filme, b: Filme) => (b.nota_tmdb ?? 0) - (a.nota_tmdb ?? 0);
+  const filmesComNota = filmesAtivos.filter((f) => f.nota_tmdb != null);
+
+  const maisPontuados = [...filmesComNota].sort(porNotaDesc).slice(0, 12);
+
+  const generoAcao = 'filme de ação';
+  const filmesAcao = filtrarPorGenero(filmesAtivos, generoAcao)
+    .slice()
+    .sort(porNotaDesc)
+    .slice(0, 12);
+
+  const idsUsados = new Set([...maisPontuados, ...filmesAcao].map((f) => f.id));
+  const premiados = [...filmesComNota]
+    .filter((f) => !idsUsados.has(f.id))
+    .sort(porNotaDesc)
+    .slice(0, 12);
+
+  const secoesPrioritarias = [
+    { titulo: 'Mais pontuados', filmes: maisPontuados },
+    { titulo: 'Ação', filmes: filmesAcao },
+    { titulo: 'Premiados', filmes: premiados },
+  ].filter((s) => s.filmes.length > 0);
+
   const todasAsCategorias = obterGenerosCatalogo(filmesAtivos);
-  const carouselSections = todasAsCategorias.slice(0, 5).map((genero) => ({
+  const outrasCategorias = todasAsCategorias.filter((g) => g !== generoAcao).slice(0, 3);
+  const outrasSecoes = outrasCategorias.map((genero) => ({
     titulo: genero,
     filmes: filtrarPorGenero(filmesAtivos, genero).slice(0, 12),
   }));
+
+  const carouselSections = [...secoesPrioritarias, ...outrasSecoes];
 
   const filtroAtivo = generoSelecionado !== 'Todos' || soDisponivel;
 

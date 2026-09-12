@@ -42,7 +42,17 @@ export async function POST(request: NextRequest) {
 
       if (error) throw error;
 
-      return NextResponse.json({ user: data.user, session: data.session });
+      const { data: admin } = await supabase
+        .from('administradores')
+        .select('id')
+        .eq('auth_user_id', data.user.id)
+        .maybeSingle();
+
+      return NextResponse.json({
+        user: data.user,
+        session: data.session,
+        isAdmin: Boolean(admin),
+      });
     } else if (action === 'signout') {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;

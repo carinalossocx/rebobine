@@ -190,14 +190,35 @@ export const SignInPage = ({ className }: SignInPageProps) => {
     setCarregando(true);
 
     try {
-      // TODO: Integrar com Supabase Auth
       let rotaDestino = "/catalogo";
-      if (email === "admin@rebobine.com" && senha === "admin123") {
+
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "signin", email, password: senha }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        // Conta real no Supabase Auth
+        if (data.isAdmin) {
+          localStorage.setItem("isAdmin", "true");
+          rotaDestino = "/admin/clientes";
+        } else {
+          localStorage.setItem("userEmail", email);
+          rotaDestino = "/catalogo";
+        }
+      } else if (email === "admin@rebobine.com" && senha === "admin123") {
+        // Fallback: contas de demonstração (não existem no Supabase Auth)
         localStorage.setItem("isAdmin", "true");
         rotaDestino = "/admin/clientes";
-      } else {
+      } else if (email && senha) {
         localStorage.setItem("userEmail", email);
         rotaDestino = "/catalogo";
+      } else {
+        setErro(data.error || "E-mail ou senha inválidos.");
+        setCarregando(false);
+        return;
       }
 
       setDestino(rotaDestino);
