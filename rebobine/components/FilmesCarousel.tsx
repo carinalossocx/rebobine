@@ -49,24 +49,25 @@ export default function FilmesCarousel({
   if (filmes.length === 0) return null;
 
   return (
-    <div className="mb-12">
-      <h2 className="text-2xl font-display font-bold text-white mb-4">{titulo}</h2>
+    <section className="py-12 mb-8">
+      <h2 className="text-subhead font-display font-bold text-text-primary mb-6">{titulo}</h2>
 
       <div className="relative group">
-        {/* Botão Esquerda */}
+        {/* Left Scroll Button */}
         {canScrollLeft && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100"
+            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-medium hover:shadow-large text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
+            aria-label="Scroll left"
           >
-            ‹
+            <span className="text-xl font-bold">‹</span>
           </button>
         )}
 
-        {/* Carousel */}
+        {/* Carousel Container */}
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+          className="flex gap-6 overflow-x-auto scrollbar-hide pb-2"
           style={{ scrollBehavior: 'smooth' }}
         >
           {filmes.map((filme) => (
@@ -83,16 +84,17 @@ export default function FilmesCarousel({
           ))}
         </div>
 
-        {/* Botão Direita */}
+        {/* Right Scroll Button */}
         {canScrollRight && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100"
+            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-medium hover:shadow-large text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
+            aria-label="Scroll right"
           >
-            ›
+            <span className="text-xl font-bold">›</span>
           </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

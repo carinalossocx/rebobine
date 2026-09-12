@@ -134,8 +134,8 @@ export default function CatalogPage() {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">🎬</div>
-          <p className="text-white/60 font-body">Carregando catálogo...</p>
+          <div className="animate-spin text-6xl mb-6">🎬</div>
+          <p className="text-text-secondary font-body text-lg">Carregando catálogo...</p>
         </div>
       </div>
     );
@@ -181,19 +181,22 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-bg">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <section className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-2">
-            Catálogo Rebobine
-          </h1>
-          <p className="text-white/60 font-body mb-6">
-            {filtrados.length} de {filmesAtivos.length} filmes
-          </p>
+        <section className="mb-16">
+          <div className="mb-8">
+            <h1 className="text-display-lg font-display font-bold text-text-primary mb-3">
+              Catálogo Rebobine
+            </h1>
+            <p className="text-body-lg text-text-secondary font-body">
+              Descubra {filmesAtivos.length} filmes incríveis para alugar
+              {filtrados.length !== filmesAtivos.length && ` (${filtrados.length} exibidos)`}
+            </p>
+          </div>
 
-          {/* Busca + Filtro (suspenso, só abre ao clicar) */}
+          {/* Busca + Filtro */}
           <div className="relative" ref={filtroRef}>
-            <div className="flex gap-2">
+            <div className="flex gap-3 items-stretch">
               <div className="relative flex-1">
                 <input
                   type="text"
@@ -201,9 +204,9 @@ export default function CatalogPage() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   onFocus={() => setFiltroAberto(true)}
-                  className="w-full h-11 pl-4 pr-11 bg-surface text-white rounded-md border border-white/10 focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 transition font-body placeholder:text-white/40"
+                  className="w-full h-12 pl-5 pr-12 bg-surface text-text-primary rounded-sm border border-border focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 transition font-body placeholder:text-text-tertiary"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none text-lg">
                   🔍
                 </span>
               </div>
@@ -211,37 +214,37 @@ export default function CatalogPage() {
               <button
                 onClick={() => setFiltroAberto((v) => !v)}
                 aria-expanded={filtroAberto}
-                className={`h-11 px-4 rounded-md border font-body font-semibold text-sm transition whitespace-nowrap flex items-center gap-2 ${
+                className={`px-6 py-3 rounded-sm border font-body font-bold text-sm transition whitespace-nowrap flex items-center gap-2 ${
                   filtroAtivo
-                    ? 'bg-primary border-primary text-white'
-                    : 'bg-surface border-white/10 text-white/70 hover:border-white/30'
+                    ? 'bg-primary border-primary text-white hover:bg-primary-hover'
+                    : 'bg-surface border-border text-text-primary hover:bg-surface-light'
                 }`}
               >
                 Filtros
                 {filtroAtivo && (
-                  <span className="w-2 h-2 rounded-full bg-white" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
                 )}
               </button>
             </div>
 
-            {/* Painel suspenso — só aparece quando aberto */}
+            {/* Filter Panel - Dropdown */}
             {filtroAberto && (
-              <div className="absolute left-0 right-0 mt-2 z-30 bg-surface border border-white/10 rounded-lg shadow-overlay p-4 max-h-[70vh] overflow-y-auto">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-semibold text-white/70 font-body">
-                    Gênero
+              <div className="absolute left-0 right-0 mt-3 z-30 bg-surface border border-border rounded-sm shadow-large p-6 max-h-[70vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <label className="text-body-sm font-body font-bold text-text-primary">
+                    Filtrar por gênero
                   </label>
                   {generoSelecionado !== 'Todos' && (
                     <button
                       onClick={() => setGeneroSelecionado('Todos')}
-                      className="text-xs text-primary hover:text-primary-light font-body"
+                      className="text-caption font-body font-bold text-primary hover:text-primary-hover transition"
                     >
-                      Limpar
+                      Limpar filtro
                     </button>
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-6">
                   {generos.map((genero) => (
                     <button
                       key={genero}
@@ -249,10 +252,10 @@ export default function CatalogPage() {
                         setGeneroSelecionado(genero);
                         setFiltroAberto(false);
                       }}
-                      className={`px-3 py-1.5 rounded-full text-sm font-body font-medium transition border ${
+                      className={`px-4 py-2.5 rounded-full text-caption font-body font-bold transition border ${
                         generoSelecionado === genero
                           ? 'bg-primary border-primary text-white'
-                          : 'bg-transparent border-white/15 text-white/70 hover:bg-white/5'
+                          : 'bg-surface-light border-border text-text-secondary hover:bg-surface-muted'
                       }`}
                     >
                       {genero}
@@ -260,14 +263,14 @@ export default function CatalogPage() {
                   ))}
                 </div>
 
-                <label className="flex items-center gap-2 text-white/70 font-body text-sm border-t border-white/10 pt-3">
+                <label className="flex items-center gap-3 text-text-primary font-body text-body-sm border-t border-border pt-4">
                   <input
                     type="checkbox"
                     checked={soDisponivel}
                     onChange={(e) => setSoDisponivel(e.target.checked)}
-                    className="w-4 h-4 accent-[#D946EF]"
+                    className="w-5 h-5 accent-primary rounded-xs cursor-pointer"
                   />
-                  Apenas disponíveis
+                  <span className="font-medium">Apenas disponíveis</span>
                 </label>
               </div>
             )}
@@ -284,14 +287,19 @@ export default function CatalogPage() {
           />
         ))}
 
-        {/* Grid de Resultados da Busca */}
+        {/* Search Results Grid */}
         {(busca || generoSelecionado !== 'Todos') && (
-          <section>
-            <h2 className="text-2xl font-display font-bold text-white mb-6">
-              Resultados ({filtrados.length})
+          <section className="mb-16">
+            <h2 className="text-subhead font-display font-bold text-text-primary mb-8">
+              Resultados
+              {filtrados.length > 0 && (
+                <span className="text-body-lg font-body text-text-secondary ml-2">
+                  ({filtrados.length} {filtrados.length === 1 ? 'filme' : 'filmes'})
+                </span>
+              )}
             </h2>
             {filtrados.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {filtrados.map((filme) => (
                   <div key={filme.id}>
                     <FilmeCard
@@ -303,116 +311,144 @@ export default function CatalogPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-white/50 font-body">Nenhum filme encontrado.</p>
+              <div className="text-center py-20">
+                <p className="text-body-lg text-text-secondary font-body">
+                  Nenhum filme encontrado. Tente ajustar seus filtros.
+                </p>
               </div>
             )}
           </section>
         )}
       </main>
 
-      {/* Modal Detalhe do Filme */}
+      {/* Movie Detail Modal */}
       {modalFilme && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={fecharModal}
         >
           <div
-            className="bg-surface rounded-lg max-w-2xl w-full max-h-[32rem] overflow-y-auto shadow-overlay"
+            className="bg-surface rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-overlay border border-border"
             onClick={(e) => e.stopPropagation()}
           >
+            <div className="sticky top-0 bg-surface border-b border-border p-4 flex justify-between items-center">
+              <h2 className="text-headline font-display font-bold text-text-primary">
+                Detalhes do Filme
+              </h2>
+              <button
+                onClick={fecharModal}
+                className="text-2xl text-text-tertiary hover:text-text-secondary transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
             <div className="p-6">
-              <div className="flex gap-6">
+              <div className="flex gap-6 mb-6">
                 {/* Poster */}
-                <div className="flex-shrink-0 w-32 h-48 bg-surface-raised rounded-md overflow-hidden flex items-center justify-center">
+                <div className="flex-shrink-0 w-40 h-56 bg-surface-muted rounded-md overflow-hidden flex items-center justify-center shadow-medium">
                   {getPosterUrl(modalFilme.poster_path) ? (
                     <img
                       src={getPosterUrl(modalFilme.poster_path)!}
                       alt={modalFilme.titulo}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
-                    <span className="text-white/40 text-xs text-center px-2 font-body">Sem imagem</span>
+                    <span className="text-text-tertiary text-xs text-center px-2 font-body">Sem imagem</span>
                   )}
                 </div>
 
-                {/* Info */}
+                {/* Film Info */}
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h2 className="text-2xl font-display font-bold text-white">
-                        {modalFilme.titulo}
-                      </h2>
-                      {modalFilme.titulo_original && (
-                        <p className="text-white/50 font-body">{modalFilme.titulo_original}</p>
-                      )}
-                    </div>
-                    <button
-                      onClick={fecharModal}
-                      className="text-2xl text-white/40 hover:text-white transition-colors"
-                    >
-                      ✕
-                    </button>
+                  <div className="mb-4">
+                    <h3 className="text-headline font-display font-bold text-text-primary mb-1">
+                      {modalFilme.titulo}
+                    </h3>
+                    {modalFilme.titulo_original && (
+                      <p className="text-body-sm text-text-secondary font-body italic">{modalFilme.titulo_original}</p>
+                    )}
                   </div>
 
-                  {/* Meta */}
-                  <div className="space-y-2 mb-4 text-sm font-body">
+                  {/* Metadata */}
+                  <div className="space-y-3 mb-6 border-b border-border pb-6">
                     {modalFilme.data_lancamento && (
-                      <p className="text-white/70">
-                        <span className="font-semibold text-white">Lançamento:</span>{' '}
-                        {new Date(modalFilme.data_lancamento).toLocaleDateString('pt-BR')}
-                      </p>
+                      <div>
+                        <p className="text-caption font-body font-bold text-text-tertiary mb-1">
+                          LANÇAMENTO
+                        </p>
+                        <p className="text-body-sm font-body text-text-primary">
+                          {new Date(modalFilme.data_lancamento).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
                     )}
                     {modalFilme.nota_tmdb && (
-                      <p className="text-white/70">
-                        <span className="font-semibold text-white">Nota TMDB:</span>{' '}
-                        <span className="text-tertiary">⭐ {modalFilme.nota_tmdb.toFixed(1)}/10</span>
-                      </p>
+                      <div>
+                        <p className="text-caption font-body font-bold text-text-tertiary mb-1">
+                          AVALIAÇÃO
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-tertiary text-lg">⭐</span>
+                          <span className="text-body-md font-body font-bold text-text-primary">
+                            {modalFilme.nota_tmdb.toFixed(1)}/10
+                          </span>
+                        </div>
+                      </div>
                     )}
                     {modalFilme.generos.length > 0 && (
-                      <p className="text-white/70">
-                        <span className="font-semibold text-white">Gêneros:</span>{' '}
-                        {modalFilme.generos.join(', ')}
-                      </p>
+                      <div>
+                        <p className="text-caption font-body font-bold text-text-tertiary mb-2">
+                          GÊNEROS
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {modalFilme.generos.map((g) => (
+                            <span key={g} className="bg-surface-light text-text-primary px-3 py-1.5 rounded-full text-caption font-body font-medium">
+                              {g}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
 
-                  {/* Sinopse */}
+                  {/* Synopsis */}
                   {modalFilme.sinopse && (
-                    <div className="mb-4">
-                      <p className="text-white/70 text-sm leading-relaxed font-body">
+                    <div className="mb-6">
+                      <p className="text-caption font-body font-bold text-text-tertiary mb-2">
+                        SINOPSE
+                      </p>
+                      <p className="text-body-md text-text-secondary leading-relaxed font-body">
                         {modalFilme.sinopse}
                       </p>
                     </div>
                   )}
 
-                  {/* Feedback */}
+                  {/* Feedback Message */}
                   {feedback && (
                     <div
-                      className={`mb-4 px-4 py-2 rounded-md text-sm font-body ${
+                      className={`mb-6 px-4 py-3 rounded-sm text-sm font-body border ${
                         feedback.tipo === 'sucesso'
-                          ? 'bg-green-600/20 border border-green-600 text-green-300'
+                          ? 'bg-success/10 border-success text-success'
                           : feedback.tipo === 'erro'
-                          ? 'bg-red-600/20 border border-red-600 text-red-300'
-                          : 'bg-secondary/20 border border-secondary text-secondary'
+                          ? 'bg-error/10 border-error text-error'
+                          : 'bg-info/10 border-info text-info'
                       }`}
                     >
                       {feedback.texto}
                     </div>
                   )}
 
-                  {/* Ações */}
+                  {/* Action Buttons */}
                   <div className="flex gap-3">
                     <button
                       onClick={handleAlugar}
-                      className="px-6 py-2.5 bg-primary hover:bg-primary-hover active:bg-primary-active text-white rounded-full font-body font-bold text-sm transition-colors"
+                      className="px-6 py-3 bg-primary hover:bg-primary-hover active:bg-primary-active text-white rounded-full font-body font-bold text-body-sm transition-colors shadow-subtle hover:shadow-medium"
                     >
                       🎬 Alugar
                     </button>
                     <button
                       onClick={handleReservar}
                       disabled={reservando}
-                      className="px-6 py-2.5 bg-transparent border-2 border-primary hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed text-primary rounded-full font-body font-bold text-sm transition-colors"
+                      className="px-6 py-3 bg-transparent border-2 border-primary text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-body font-bold text-body-sm transition-colors"
                     >
                       {reservando ? 'Reservando...' : '⭐ Reservar'}
                     </button>
@@ -424,10 +460,12 @@ export default function CatalogPage() {
         </div>
       )}
 
-      {/* Créditos TMDB */}
-      <footer className="border-t border-white/10 mt-16 py-8 bg-surface">
-        <div className="max-w-7xl mx-auto px-4 text-center text-white/40 text-sm font-body">
-          <p>Dados cinematográficos: TMDB. Este produto usa a API TMDB sem endosso.</p>
+      {/* Footer */}
+      <footer className="border-t border-border mt-20 py-12 bg-surface">
+        <div className="max-w-7xl mx-auto px-4">
+          <p className="text-center text-text-tertiary text-caption font-body">
+            Dados cinematográficos fornecidos por TMDB. Este produto usa a API TMDB sem endosso oficial.
+          </p>
         </div>
       </footer>
     </div>

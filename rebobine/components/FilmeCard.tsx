@@ -14,9 +14,7 @@ export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeC
   const [hovering, setHovering] = useState(false);
   const getPosterUrl = (): string => {
     if (!filme.poster_path) return '/placeholder-poster.png';
-    // Se já é URL completa, use como está
     if (filme.poster_path.startsWith('http')) return filme.poster_path;
-    // Se é ID TMDB, adicione prefixo
     return `https://image.tmdb.org/t/p/w500${filme.poster_path}`;
   };
   const posterUrl = getPosterUrl();
@@ -28,69 +26,81 @@ export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeC
       onMouseLeave={() => setHovering(false)}
       onClick={() => onClique?.(filme)}
     >
-      {/* Poster */}
-      <div className="relative overflow-hidden rounded-lg bg-surface aspect-[2/3] shadow-medium group-hover:shadow-product-hover transition-shadow duration-200">
-        <Image
-          src={posterUrl}
-          alt={filme.titulo}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+      {/* Card Container */}
+      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-subtle hover:shadow-product-hover transition-all duration-200">
+        {/* Poster Image */}
+        <div className="relative overflow-hidden aspect-[2/3] bg-surface-muted">
+          <Image
+            src={posterUrl}
+            alt={filme.titulo}
+            fill
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
 
-        {/* Overlay em Hover */}
-        {hovering && (
-          <div className="absolute inset-0 bg-black/80 flex flex-col justify-between p-4 transition-all">
-            {/* Info Top */}
-            <div>
-              <p className="text-xs text-slate-300 mb-1">
-                {filme.nota_tmdb ? `⭐ ${filme.nota_tmdb.toFixed(1)}` : 'Sem avaliações'}
-              </p>
-              <p className="text-xs text-slate-400">
-                {filme.data_lancamento
-                  ? new Date(filme.data_lancamento).getFullYear()
-                  : 'Não informado'}
-              </p>
+          {/* Overlay em Hover - Fuchsia Tinted */}
+          {hovering && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-between p-4 transition-all">
+              {/* Rating */}
+              <div className="flex justify-between items-start">
+                <div>
+                  {filme.nota_tmdb && (
+                    <div className="flex items-center gap-1 bg-tertiary text-text-primary rounded-full px-2 py-1 w-fit">
+                      <span className="text-xs font-bold">⭐</span>
+                      <span className="text-xs font-bold">{filme.nota_tmdb.toFixed(1)}</span>
+                    </div>
+                  )}
+                </div>
+                {!filme.ativo && (
+                  <span className="bg-warning text-white text-xs font-bold px-2 py-1 rounded-xs">
+                    Inativo
+                  </span>
+                )}
+              </div>
+
+              {/* Sinopse */}
+              {filme.sinopse && (
+                <div className="mb-4">
+                  <p className="text-xs text-white/90 line-clamp-2 font-body leading-relaxed">
+                    {filme.sinopse}
+                  </p>
+                </div>
+              )}
+
+              {/* Status Badge */}
+              <div>
+                <span
+                  className={`inline-block px-3 py-1.5 rounded-full text-xs font-bold text-white transition-colors ${
+                    disponivel
+                      ? 'bg-success/90 hover:bg-success'
+                      : 'bg-error/90 hover:bg-error'
+                  }`}
+                >
+                  {disponivel ? '✓ Disponível' : '✗ Alugado'}
+                </span>
+              </div>
             </div>
+          )}
 
-            {/* Sinopse */}
-            <div className="mb-4">
-              <p className="text-xs text-slate-300 line-clamp-3">
-                {filme.sinopse || 'Sem sinopse'}
-              </p>
+          {/* Badge Year - Top Right */}
+          {filme.data_lancamento && (
+            <div className="absolute top-3 right-3 bg-white/95 text-text-primary text-xs font-bold px-2.5 py-1 rounded-xs">
+              {new Date(filme.data_lancamento).getFullYear()}
             </div>
+          )}
+        </div>
 
-            {/* Status */}
-            <div className="flex gap-2 text-xs">
-              <span
-                className={`px-2 py-1 rounded font-semibold ${
-                  disponivel
-                    ? 'bg-green-600 text-white'
-                    : 'bg-red-600 text-white'
-                }`}
-              >
-                {disponivel ? '● Disponível' : '● Alugado'}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Badge se inativo */}
-        {!filme.ativo && (
-          <div className="absolute top-2 right-2 bg-yellow-600 text-white text-xs px-2 py-1 rounded">
-            Inativo
-          </div>
-        )}
-      </div>
-
-      {/* Título */}
-      <div className="mt-2">
-        <h3 className="text-sm font-semibold text-white truncate">{filme.titulo}</h3>
-        {filme.generos.length > 0 && (
-          <p className="text-xs text-slate-400 truncate">
-            {filme.generos.slice(0, 2).join(', ')}
-          </p>
-        )}
+        {/* Content Section */}
+        <div className="p-4">
+          <h3 className="text-body-sm font-body font-bold text-text-primary truncate mb-1.5">
+            {filme.titulo}
+          </h3>
+          {filme.generos.length > 0 && (
+            <p className="text-caption text-text-tertiary truncate">
+              {filme.generos.slice(0, 2).join(', ')}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${poppins.variable} ${nunito.variable} ${spaceMono.variable}`}>
-      <body className="bg-bg text-white font-body">{children}</body>
+      <body className="bg-bg text-text-primary font-body">{children}</body>
     </html>
   );
 }

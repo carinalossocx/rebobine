@@ -245,18 +245,18 @@ export const SignInPage = ({ className }: SignInPageProps) => {
   };
 
   return (
-    <div className={cn("flex w-[100%] flex-col min-h-screen bg-black relative", className)}>
+    <div className={cn("flex w-[100%] flex-col min-h-screen bg-gradient-to-br from-bg via-bg to-surface relative", className)}>
       <div className="absolute inset-0 z-0">
         {initialCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
               animationSpeed={3}
-              containerClassName="bg-black"
+              containerClassName="bg-transparent"
               colors={[
-                [255, 255, 255],
-                [255, 255, 255],
+                [217, 70, 239],
+                [34, 211, 238],
               ]}
-              dotSize={6}
+              dotSize={5}
               reverse={false}
             />
           </div>
@@ -266,26 +266,28 @@ export const SignInPage = ({ className }: SignInPageProps) => {
           <div className="absolute inset-0">
             <CanvasRevealEffect
               animationSpeed={4}
-              containerClassName="bg-black"
+              containerClassName="bg-transparent"
               colors={[
-                [255, 255, 255],
-                [255, 255, 255],
+                [217, 70, 239],
+                [250, 204, 21],
               ]}
-              dotSize={6}
+              dotSize={5}
               reverse={true}
             />
           </div>
         )}
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,1)_0%,_transparent_100%)]" />
-        <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(250,250,250,0.3)_0%,_transparent_100%)]" />
+        <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-bg/80 to-transparent" />
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
-        {/* Marca */}
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-5 py-2 rounded-full border border-[#333] bg-[#1f1f1f57] backdrop-blur-sm">
-          <span className="text-xl">🎬</span>
-          <span className="text-white font-semibold text-sm">Rebobine</span>
+        {/* Header */}
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-6 py-3 rounded-full border border-border bg-surface/90 backdrop-blur-sm shadow-subtle">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+            🎬
+          </div>
+          <span className="text-text-primary font-display font-bold text-lg">Rebobine</span>
         </div>
 
         <div className="flex flex-1 flex-col lg:flex-row">
@@ -301,11 +303,11 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     transition={{ duration: 0.4, ease: "easeOut" }}
                     className="space-y-6 text-center"
                   >
-                    <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">
+                    <div className="space-y-2">
+                      <h1 className="text-[2.5rem] font-display font-bold leading-[1.1] tracking-tight text-text-primary">
                         Bem-vindo de volta
                       </h1>
-                      <p className="text-[1.4rem] text-white/70 font-light">
+                      <p className="text-lg text-text-secondary font-body font-light">
                         Entre para acessar a locadora
                       </p>
                     </div>
@@ -318,12 +320,12 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                             placeholder="seu@email.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center bg-transparent"
+                            className="w-full backdrop-blur-sm text-text-primary border-1.5 border-border rounded-full py-3 px-4 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/15 text-center bg-surface/80 placeholder:text-text-tertiary font-body"
                             required
                           />
                           <button
                             type="submit"
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
+                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-primary hover:bg-primary-hover transition-colors group overflow-hidden font-bold"
                             aria-label="Continuar"
                           >
                             <span className="relative w-full h-full block overflow-hidden">
@@ -342,25 +344,25 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <button
                           type="button"
                           onClick={() => preencherDemo("admin")}
-                          className="px-3 py-1.5 rounded-full border border-white/10 text-white/50 hover:text-white/80 hover:border-white/30 transition-colors"
+                          className="px-3 py-1.5 rounded-full border border-border text-text-secondary hover:text-text-primary hover:border-primary hover:bg-surface transition-colors font-body font-medium"
                         >
                           Demo Admin
                         </button>
                         <button
                           type="button"
                           onClick={() => preencherDemo("cliente")}
-                          className="px-3 py-1.5 rounded-full border border-white/10 text-white/50 hover:text-white/80 hover:border-white/30 transition-colors"
+                          className="px-3 py-1.5 rounded-full border border-border text-text-secondary hover:text-text-primary hover:border-primary hover:bg-surface transition-colors font-body font-medium"
                         >
                           Demo Cliente
                         </button>
                       </div>
                     </div>
 
-                    <p className="text-xs text-white/40 pt-10">
+                    <p className="text-xs text-text-tertiary pt-10 font-body">
                       Não tem conta?{" "}
                       <Link
                         href="/cadastro"
-                        className="underline text-white/40 hover:text-white/60 transition-colors"
+                        className="underline text-primary hover:text-primary-hover transition-colors font-bold"
                       >
                         Criar uma nova conta
                       </Link>
@@ -375,17 +377,17 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     transition={{ duration: 0.4, ease: "easeOut" }}
                     className="space-y-6 text-center"
                   >
-                    <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">
+                    <div className="space-y-2">
+                      <h1 className="text-[2.5rem] font-display font-bold leading-[1.1] tracking-tight text-text-primary">
                         Digite sua senha
                       </h1>
-                      <p className="text-[1.1rem] text-white/50 font-light break-all px-4">
+                      <p className="text-base text-text-secondary font-body font-light break-all px-4">
                         {email}
                       </p>
                     </div>
 
                     {erro && (
-                      <div className="bg-red-600/20 border border-red-600/40 text-red-300 px-4 py-2 rounded-full text-sm">
+                      <div className="bg-error/10 border border-error text-error px-4 py-3 rounded-sm text-sm font-body font-bold">
                         {erro}
                       </div>
                     )}
@@ -397,7 +399,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         placeholder="••••••••"
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
-                        className="w-full backdrop-blur-[1px] text-white border border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border-white/30 text-center bg-transparent"
+                        className="w-full backdrop-blur-sm text-text-primary border border-border rounded-full py-3 px-4 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/15 text-center bg-surface/80 placeholder:text-text-tertiary font-body"
                         required
                       />
 
@@ -405,7 +407,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <motion.button
                           type="button"
                           onClick={handleBackClick}
-                          className="rounded-full bg-white text-black font-medium px-8 py-3 hover:bg-white/90 transition-colors w-[30%]"
+                          className="rounded-full bg-surface text-text-primary font-body font-bold px-8 py-3 border border-border hover:bg-surface-light transition-colors w-[30%]"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
@@ -414,10 +416,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <motion.button
                           type="submit"
                           disabled={!senha || carregando}
-                          className={`flex-1 rounded-full font-medium py-3 border transition-all duration-300 ${
+                          className={`flex-1 rounded-full font-body font-bold py-3 border transition-all duration-300 ${
                             senha && !carregando
-                              ? "bg-white text-black border-transparent hover:bg-white/90 cursor-pointer"
-                              : "bg-[#111] text-white/50 border-white/10 cursor-not-allowed"
+                              ? "bg-primary text-white border-primary hover:bg-primary-hover cursor-pointer"
+                              : "bg-surface-light text-text-tertiary border-border cursor-not-allowed"
                           }`}
                           whileHover={senha ? { scale: 1.02 } : {}}
                           whileTap={senha ? { scale: 0.98 } : {}}
@@ -427,10 +429,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                       </div>
                     </form>
 
-                    <div className="pt-10 bg-slate-800/30 rounded-lg p-4 text-xs text-white/40">
-                      <p className="font-semibold mb-1">🔑 Contas de teste:</p>
-                      <p>Admin: admin@rebobine.com / admin123</p>
-                      <p>Cliente: joao@test.com / (qualquer senha)</p>
+                    <div className="pt-10 bg-surface-light rounded-sm p-4 text-xs text-text-tertiary font-body border border-border">
+                      <p className="font-bold mb-2">🔑 Contas de teste:</p>
+                      <p className="text-text-secondary">Admin: admin@rebobine.com / admin123</p>
+                      <p className="text-text-secondary">Cliente: joao@test.com / (qualquer senha)</p>
                     </div>
                   </motion.div>
                 ) : (
@@ -441,11 +443,11 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                     transition={{ duration: 0.4, ease: "easeOut", delay: 0.3 }}
                     className="space-y-6 text-center"
                   >
-                    <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">
+                    <div className="space-y-2">
+                      <h1 className="text-[2.5rem] font-display font-bold leading-[1.1] tracking-tight text-text-primary">
                         Você entrou!
                       </h1>
-                      <p className="text-[1.25rem] text-white/50 font-light">Bem-vindo(a)</p>
+                      <p className="text-lg text-text-secondary font-body font-light">Bem-vindo(a)</p>
                     </div>
 
                     <motion.div
@@ -454,10 +456,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                       transition={{ duration: 0.5, delay: 0.5 }}
                       className="py-10"
                     >
-                      <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-white to-white/70 flex items-center justify-center">
+                      <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-large">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-8 w-8 text-black"
+                          className="h-8 w-8 text-white"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -475,7 +477,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
                       onClick={() => router.push(destino)}
-                      className="w-full rounded-full bg-white text-black font-medium py-3 hover:bg-white/90 transition-colors"
+                      className="w-full rounded-full bg-primary text-white font-body font-bold py-3 hover:bg-primary-hover transition-colors shadow-subtle hover:shadow-medium"
                     >
                       Continuar
                     </motion.button>
