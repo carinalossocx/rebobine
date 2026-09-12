@@ -141,39 +141,48 @@ export default function CatalogPage() {
     );
   }
 
-  // Seções para carousel: primeiro os mais pontuados, depois ação, depois premiados,
-  // depois demais gêneros
-  const porNotaDesc = (a: Filme, b: Filme) => (b.nota_tmdb ?? 0) - (a.nota_tmdb ?? 0);
-  const filmesComNota = filmesAtivos.filter((f) => f.nota_tmdb != null);
+  // Ordenar por data de lançamento (mais recentes primeiro)
+  const porDataDesc = (a: Filme, b: Filme) => {
+    const dataA = a.data_lancamento ? new Date(a.data_lancamento).getTime() : 0;
+    const dataB = b.data_lancamento ? new Date(b.data_lancamento).getTime() : 0;
+    return dataB - dataA;
+  };
 
-  const maisPontuados = [...filmesComNota].sort(porNotaDesc).slice(0, 12);
+  // Categorias preferidas com seus nomes normalizados
+  const categoriasMapeadas: Record<string, string[]> = {
+    'Ação': ['filme de ação', 'ação'],
+    'Suspense': ['suspense', 'thriller'],
+    'Drama': ['drama'],
+    'Para Família': ['para família', 'família', 'aventura'],
+    'Premiados': [], // Especial: top rated
+    'Animações': ['animação'],
+    'Infantil': ['infantil', 'animação'],
+  };
 
-  const generoAcao = 'filme de ação';
-  const filmesAcao = filtrarPorGenero(filmesAtivos, generoAcao)
-    .slice()
-    .sort(porNotaDesc)
-    .slice(0, 12);
+  const categorias = ['Ação', 'Suspense', 'Drama', 'Para Família', 'Premiados', 'Animações', 'Infantil'];
+  const carouselSections = categorias
+    .map((cat) => {
+      let filmes: Filme[] = [];
 
-  const idsUsados = new Set([...maisPontuados, ...filmesAcao].map((f) => f.id));
-  const premiados = [...filmesComNota]
-    .filter((f) => !idsUsados.has(f.id))
-    .sort(porNotaDesc)
-    .slice(0, 12);
+      if (cat === 'Premiados') {
+        // Premiados: os mais bem avaliados
+        filmes = [...filmesAtivos]
+          .filter((f) => f.nota_tmdb != null && f.nota_tmdb >= 7)
+          .sort((a, b) => (b.nota_tmdb ?? 0) - (a.nota_tmdb ?? 0))
+          .sort(porDataDesc)
+          .slice(0, 12);
+      } else {
+        // Outros: filtrar por gênero e ordenar por data (mais recentes)
+        const generosAlvo = categoriasMapeadas[cat] || [cat.toLowerCase()];
+        filmes = filmesAtivos
+          .filter((f) => generosAlvo.some((g) => f.generos.some((fg) => fg.toLowerCase().includes(g.toLowerCase()))))
+          .sort(porDataDesc)
+          .slice(0, 12);
+      }
 
-  const secoesPrioritarias = [
-    { titulo: 'Mais pontuados', filmes: maisPontuados },
-    { titulo: 'Ação', filmes: filmesAcao },
-    { titulo: 'Premiados', filmes: premiados },
-  ].filter((s) => s.filmes.length > 0);
-
-  const todasAsCategorias = obterGenerosCatalogo(filmesAtivos);
-  const outrasCategorias = todasAsCategorias.filter((g) => g !== generoAcao).slice(0, 3);
-  const outrasSecoes = outrasCategorias.map((genero) => ({
-    titulo: genero,
-    filmes: filtrarPorGenero(filmesAtivos, genero).slice(0, 12),
-  }));
-
-  const carouselSections = [...secoesPrioritarias, ...outrasSecoes];
+      return { titulo: cat, filmes };
+    })
+    .filter((s) => s.filmes.length > 0);
 
   const filtroAtivo = generoSelecionado !== 'Todos' || soDisponivel;
 
