@@ -50,14 +50,14 @@ export default function FilmesCarousel({
 
   return (
     <section className="py-12 mb-8">
-      <h2 className="text-subhead font-display font-bold text-text-primary mb-6">{titulo}</h2>
+      <h2 className="text-subhead font-display font-bold text-text-primary dark:text-text-dark-primary mb-6">{titulo}</h2>
 
       <div className="relative group">
         {/* Left Scroll Button */}
         {canScrollLeft && (
           <button
             onClick={() => scroll('left')}
-            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-medium hover:shadow-large text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
+            className="absolute -left-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white dark:bg-surface-dark shadow-medium hover:shadow-large text-primary dark:text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
             aria-label="Scroll left"
           >
             <span className="text-xl font-bold">‹</span>
@@ -88,7 +88,7 @@ export default function FilmesCarousel({
         {canScrollRight && (
           <button
             onClick={() => scroll('right')}
-            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white shadow-medium hover:shadow-large text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
+            className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white dark:bg-surface-dark shadow-medium hover:shadow-large text-primary dark:text-primary rounded-full flex items-center justify-center transition-all duration-200 hover:text-primary-hover md:opacity-0 md:group-hover:opacity-100"
             aria-label="Scroll right"
           >
             <span className="text-xl font-bold">›</span>

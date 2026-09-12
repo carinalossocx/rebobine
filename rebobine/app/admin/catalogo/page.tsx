@@ -165,7 +165,7 @@ export default function CatalogoAdminPage() {
                         ? modalFilme.poster_path
                         : `https://image.tmdb.org/t/p/w500${modalFilme.poster_path}`}
                       alt={modalFilme.titulo}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 )}

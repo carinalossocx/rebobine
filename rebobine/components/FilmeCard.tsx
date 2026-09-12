@@ -27,9 +27,9 @@ export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeC
       onClick={() => onClique?.(filme)}
     >
       {/* Card Container */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-subtle hover:shadow-product-hover transition-all duration-200">
+      <div className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-lg overflow-hidden shadow-subtle hover:shadow-product-hover transition-all duration-200">
         {/* Poster Image */}
-        <div className="relative overflow-hidden aspect-[2/3] bg-surface-muted">
+        <div className="relative overflow-hidden aspect-[2/3] bg-surface-muted dark:bg-surface-dark-muted">
           <Image
             src={posterUrl}
             alt={filme.titulo}
@@ -92,11 +92,11 @@ export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeC
 
         {/* Content Section */}
         <div className="p-4">
-          <h3 className="text-body-sm font-body font-bold text-text-primary truncate mb-1.5">
+          <h3 className="text-body-sm font-body font-bold text-text-primary dark:text-text-dark-primary truncate mb-1.5">
             {filme.titulo}
           </h3>
           {filme.generos.length > 0 && (
-            <p className="text-caption text-text-tertiary truncate">
+            <p className="text-caption text-text-tertiary dark:text-text-dark-tertiary truncate">
               {filme.generos.slice(0, 2).join(', ')}
             </p>
           )}

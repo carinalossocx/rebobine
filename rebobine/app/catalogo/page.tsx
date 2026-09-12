@@ -178,17 +178,17 @@ export default function CatalogPage() {
   const filtroAtivo = generoSelecionado !== 'Todos' || soDisponivel;
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg dark:bg-surface-dark-muted transition-colors duration-300">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <section className="mb-16">
           <div className="mb-8">
-            <h1 className="text-display-lg font-display font-bold text-text-primary mb-3">
+            <h1 className="text-display-lg font-display font-bold text-text-primary dark:text-text-dark-primary mb-3">
               Catálogo Rebobine
             </h1>
-            <p className="text-body-lg text-text-secondary font-body">
+            <p className="text-body-lg text-text-secondary dark:text-text-dark-secondary font-body">
               Descubra {filmesAtivos.length} filmes incríveis para alugar
               {filtrados.length !== filmesAtivos.length && ` (${filtrados.length} exibidos)`}
             </p>
@@ -204,9 +204,9 @@ export default function CatalogPage() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   onFocus={() => setFiltroAberto(true)}
-                  className="w-full h-12 pl-5 pr-12 bg-surface text-text-primary rounded-sm border border-border focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 transition font-body placeholder:text-text-tertiary"
+                  className="w-full h-12 pl-5 pr-12 bg-surface dark:bg-surface-dark text-text-primary dark:text-text-dark-primary rounded-sm border border-border dark:border-border-dark focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/15 transition font-body placeholder:text-text-tertiary dark:placeholder:text-text-dark-tertiary"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none text-lg">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary dark:text-text-dark-tertiary pointer-events-none text-lg">
                   🔍
                 </span>
               </div>
@@ -216,8 +216,8 @@ export default function CatalogPage() {
                 aria-expanded={filtroAberto}
                 className={`px-6 py-3 rounded-sm border font-body font-bold text-sm transition whitespace-nowrap flex items-center gap-2 ${
                   filtroAtivo
-                    ? 'bg-primary border-primary text-white hover:bg-primary-hover'
-                    : 'bg-surface border-border text-text-primary hover:bg-surface-light'
+                    ? 'bg-primary dark:bg-primary-dark border-primary text-white hover:bg-primary-hover dark:hover:bg-primary'
+                    : 'bg-surface dark:bg-surface-dark border-border dark:border-border-dark text-text-primary dark:text-text-dark-primary hover:bg-surface-light dark:hover:bg-surface-dark-light'
                 }`}
               >
                 Filtros
@@ -461,9 +461,9 @@ export default function CatalogPage() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-border mt-20 py-12 bg-surface">
+      <footer className="border-t border-border dark:border-border-dark mt-20 py-12 bg-surface dark:bg-surface-dark transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4">
-          <p className="text-center text-text-tertiary text-caption font-body">
+          <p className="text-center text-text-tertiary dark:text-text-dark-tertiary text-caption font-body">
             Dados cinematográficos fornecidos por TMDB. Este produto usa a API TMDB sem endosso oficial.
           </p>
         </div>

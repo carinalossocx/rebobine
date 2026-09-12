@@ -5,50 +5,67 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // ShopVibe Primary Palette
+        // ShopVibe Primary Palette (Light & Dark)
         primary: {
           DEFAULT: '#D946EF',
           hover: '#C026D3',
           active: '#A21CAF',
           light: '#F0ABFC',
+          dark: '#EC4899',
         },
         secondary: {
           DEFAULT: '#22D3EE', // Cyan - sale badges, promo banners
           hover: '#06B6D4',
+          dark: '#06B6D4',
         },
         tertiary: {
           DEFAULT: '#FACC15', // Yellow - ratings, highlights
           hover: '#EAB308',
+          dark: '#FCD34D',
         },
         // Light Mode Backgrounds
         bg: {
           DEFAULT: '#FAFAFA', // Global page background - clean and airy
+          dark: '#0F172A', // Dark mode background
         },
         surface: {
           DEFAULT: '#FFFFFF', // Cards, modals, cart drawer
           light: '#F5F5F5', // Hover states
           muted: '#F9FAFB', // Subtle backgrounds
+          dark: '#1E293B', // Dark mode cards
+          'dark-light': '#334155', // Dark mode hover
+          'dark-muted': '#0F172A', // Dark mode subtle bg
         },
         // Semantic Colors
         success: '#22C55E',
         warning: '#F59E0B',
         error: '#EF4444',
         info: '#3B82F6',
-        // Text
+        // Text - Light Mode
         text: {
           primary: '#171717',
           secondary: '#525252',
           tertiary: '#A3A3A3',
           inverse: '#FFFFFF',
         },
+        // Text - Dark Mode
+        'text-dark': {
+          primary: '#F8FAFC',
+          secondary: '#CBD5E1',
+          tertiary: '#94A3B8',
+          inverse: '#0F172A',
+        },
         // Borders
         border: {
           DEFAULT: '#E5E5E5',
           light: '#F5F5F5',
           muted: '#D4D4D4',
+          dark: '#334155',
+          'dark-light': '#475569',
         },
       },
       fontFamily: {
