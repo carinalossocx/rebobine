@@ -161,7 +161,9 @@ export default function CatalogoAdminPage() {
                 {modalFilme.poster_path && (
                   <div className="flex-shrink-0 w-32 h-48 bg-slate-700 rounded overflow-hidden">
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${modalFilme.poster_path}`}
+                      src={modalFilme.poster_path.startsWith('http')
+                        ? modalFilme.poster_path
+                        : `https://image.tmdb.org/t/p/w500${modalFilme.poster_path}`}
                       alt={modalFilme.titulo}
                       className="w-full h-full object-cover"
                     />

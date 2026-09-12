@@ -28,12 +28,16 @@ export default function CatalogPage() {
   useEffect(() => {
     const carregar = async () => {
       try {
+        console.log('Iniciando carregamento do catálogo...');
         const dados = await carregarCatalogo();
+        console.log('Dados recebidos:', dados.length);
         setFilmes(dados);
         const ativos = obterFilmesAtivos(dados);
+        console.log('Filmes ativos:', ativos.length);
         setFilmesAtivos(ativos);
         setFiltrados(ativos);
         setGeneros(['Todos', ...obterGenerosCatalogo(ativos)]);
+        console.log('Catálogo carregado com sucesso');
       } catch (erro) {
         console.error('Erro ao carregar catálogo:', erro);
       } finally {

@@ -12,9 +12,14 @@ interface FilmeCardProps {
 
 export default function FilmeCard({ filme, onClique, disponivel = true }: FilmeCardProps) {
   const [hovering, setHovering] = useState(false);
-  const posterUrl = filme.poster_path
-    ? `https://image.tmdb.org/t/p/w500${filme.poster_path}`
-    : '/placeholder-poster.png';
+  const getPosterUrl = (): string => {
+    if (!filme.poster_path) return '/placeholder-poster.png';
+    // Se já é URL completa, use como está
+    if (filme.poster_path.startsWith('http')) return filme.poster_path;
+    // Se é ID TMDB, adicione prefixo
+    return `https://image.tmdb.org/t/p/w500${filme.poster_path}`;
+  };
+  const posterUrl = getPosterUrl();
 
   return (
     <div

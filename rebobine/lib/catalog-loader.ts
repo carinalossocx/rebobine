@@ -14,13 +14,16 @@ export async function carregarCatalogo(): Promise<Filme[]> {
     // No cliente, usar fetch; no servidor, usar readFile
     if (typeof window !== 'undefined') {
       const res = await fetch('/dados/filmes_locadora_dataset.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      console.log('JSON loaded, filmes count:', data.filmes?.length);
       cachedCatalog = transformarDadosTMDB(data.filmes || []);
+      console.log('Transformed filmes count:', cachedCatalog.length);
     } else {
       // Servidor: ler do filesystem
       const fs = await import('fs/promises');
       const path = await import('path');
-      const caminhoJSON = path.join(process.cwd(), '..', 'filmes_locadora_dataset.json');
+      const caminhoJSON = path.join(process.cwd(), 'public', 'dados', 'filmes_locadora_dataset.json');
       const conteudo = await fs.readFile(caminhoJSON, 'utf-8');
       const data = JSON.parse(conteudo);
       cachedCatalog = transformarDadosTMDB(data.filmes || []);
@@ -34,25 +37,30 @@ export async function carregarCatalogo(): Promise<Filme[]> {
 
 function transformarDadosTMDB(filmes: any[]): Filme[] {
   return filmes
-    .filter((f) => f.id_tmdb && f.title)
-    .map((f) => ({
-      id: `tmdb-${f.id_tmdb}`,
-      chave_externa: `tmdb:${f.id_tmdb}`,
-      id_tmdb: f.id_tmdb,
-      titulo: f.title || '',
-      titulo_original: f.original_title || null,
-      sinopse: f.overview || null,
-      data_lancamento: f.release_date || null,
-      generos: f.genres || [],
-      nota_tmdb: f.vote_average || null,
-      votos_tmdb: f.vote_count || null,
-      classificacao_adulto: f.adult || false,
-      status_tmdb: f.status || null,
-      poster_path: f.poster_path || null,
-      ativo: Boolean(f.release_date && !f.adult),
-      dados_origem: f,
-      importado_em: new Date().toISOString(),
-    }));
+    .filter((f) => (f.id_tmdb || f.id_wikidata) && (f.title || f.titulo))
+    .map((f) => {
+      const id_base = f.id_tmdb || f.id_wikidata || '';
+      const titulo = f.title || f.titulo || '';
+      const ano = f.release_date ? new Date(f.release_date).getFullYear() : f.ano_lancamento;
+      return {
+        id: `${f.id_tmdb ? 'tmdb' : 'wikidata'}-${id_base}`,
+        chave_externa: `${f.id_tmdb ? 'tmdb' : 'wikidata'}:${id_base}`,
+        id_tmdb: f.id_tmdb || id_base,
+        titulo,
+        titulo_original: f.original_title || f.titulo_original || null,
+        sinopse: f.overview || f.sinopse || null,
+        data_lancamento: f.release_date || (ano ? `${ano}-01-01` : null),
+        generos: f.genres || f.generos || [],
+        nota_tmdb: f.vote_average || f.classificacao || null,
+        votos_tmdb: f.vote_count || null,
+        classificacao_adulto: f.adult || false,
+        status_tmdb: f.status || null,
+        poster_path: f.poster_path || f.imagem_url || null,  // Pode ser URL completa ou ID TMDB
+        ativo: Boolean((f.release_date || f.ano_lancamento) && !f.adult),
+        dados_origem: f,
+        importado_em: new Date().toISOString(),
+      };
+    });
 }
 
 export function filtrarPorGenero(filmes: Filme[], genero: string): Filme[] {
